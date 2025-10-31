@@ -9,7 +9,14 @@ const Home =()  => {
             <p><Input/></p>
             <Stack flexDirection={'column'} gap={2} mb={10}>
             <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
             </Stack>
+            <Button size="large" 
+            sx={{my:5,p:3,textDecoration:"underline",cursor:"pointer"}}>
+                Load More
+            </Button>
         </div>
     );
 }        
