@@ -11,9 +11,12 @@ const PostOne = () => {
     <Badge overlap="circular"
     anchorOrigin={{vertical:"bottom",horizontal:"right"}}
     badgeContent={
-        <Avatar alt="+"
+        <Avatar alt="AJ"
         src="" sx={{
-            width:20,height:20,bgcolor:'green'}}/>
+            width:20,height:20,bgcolor:'green',
+        position:'relative',
+    right:4,
+bottom:4}}/>
     }></Badge>
    </Stack>
    </>

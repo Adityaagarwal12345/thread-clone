@@ -1,6 +1,9 @@
 import { Avatar, Typography } from "@mui/material";
 import {IoIoMore} from'react-icons/io'
+import { Stack } from "@mui/system";
+import { useMediaQuery } from "@mui/material";
 const Comments=()=>{
+    const _700=useMediaQuery("(min-width:700px)");
     return (<div>
         <Stack flexDirection={"column"}
         gap={2}
@@ -13,9 +16,10 @@ const Comments=()=>{
         width={'90%'}
         >
             <Stack flexDirection={"row"}
+
         alignItems={"center"}
         
-        gap={2}>
+        gap={_700 ? 2:1}>
             <Avatar/>
             <Stack flexDirection={'column'}>
                 <Typography variant="h6" fontWeight={"bold"}
@@ -29,7 +33,7 @@ const Comments=()=>{
             color={"GrayText"}
             fontSize={"0.8rem"}>
                 <p>24min</p>
-                <IoIoMore size={15}/>
+                <IoIoMore size={_700 ?28:20}/>
             </Stack>
         
 
