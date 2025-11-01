@@ -6,3 +6,23 @@
     text-decoration: none;
     color: blue;
 }   
+.Link{
+    text-decoration:none;
+    color:black;
+}
+.image-icon{
+    cursor:pointer;
+}
+.text1{
+    border:none;
+    outline:none;
+    padding:5px 10px;
+    position:relative;
+    left:-10px;
+    color:gray;
+    font-size:1rem;
+    margin-bottom:20px;
+}
+.file-input{
+    display:none;
+}

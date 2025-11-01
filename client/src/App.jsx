@@ -12,13 +12,15 @@ import Replies from './pages/Protected/profile/Replies'
 import Repost from './pages/Protected/profile/Repost'
 import SinglePost from './pages/Protected/SinglePost'
 const App = () => {
+  const data=true;//conditional rendering for loading component comes from redux
   return (
    <>
     <Box minHeight={"100vh"}>
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route path='/' element={<ProtectedLayout/>}>
+        {
+          data? <Route path='/' element={<ProtectedLayout/>}>
         <Route exact path=""element={<Home/>}/>
         <Route exact path='post/:id' element={<SinglePost/>}/>
         <Route exact path='/search' element={<Search/>}/>
@@ -26,8 +28,11 @@ const App = () => {
            <Route exact path="threads/:id" element={<Threads/>}/>
             <Route exact path="replies/:id" element={<Replies/>}/>
              <Route exact path="reposts/:id" element={<Repost/>}/>
-        </Route>
-        <Route path='*' element={<Error/>}/>
+             </Route>
+             ):(
+             <Route path='/register' element={<Register/>}/>
+        )}
+        <Route path='*' element={<Error/>}>
         </Route>
       </Routes>
     </BrowserRouter>

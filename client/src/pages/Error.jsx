@@ -42,7 +42,7 @@ const Error = () => {
                 cursor: "pointer",
               },
             }}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(-1)}//user ne jis jageh chodha tha vapis udhar hi aajayega
           >
             Go Back
           </Button>
