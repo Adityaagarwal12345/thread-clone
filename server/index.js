@@ -2,7 +2,12 @@ const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
 const connectDb = require("./config/db");
+const mongoose = require("mongoose");
 const router = require("./routes");
+mongoose.connection.once('open', () => {
+  console.log("✅ Connected to DB:", mongoose.connection.name);
+});
+
 
 console.log("✅ Router file loaded");
 

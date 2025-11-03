@@ -107,4 +107,33 @@ exports.login=async(req,res)=>{
     }catch(err){
         res.status(400).json({msg:"error in login!",err:err.message});
     }
-}
+};
+
+//ab banayenge userdetails the hai na tou ab hmko krna hoga
+
+
+exports.userDetails = async(req,res)=>{
+    //params ka mtlb hota hai url mai data sent krna 
+    //just like hm body mai sent krte hai vesi hm log ab url mai send krenge data
+    try{
+        const {id}=req.params
+        if(!id){
+            return res.status(4000).json({msg:"id is required!"});
+        }
+        //-password ka mtlb  pw ko mat select kro
+        const user = await User.findById(id)
+        .select('-password')
+        .populate('followers')
+        .populate({path:"threads",populate:[{path:"likes"},
+            {path:'comments'},{path:'admin'}]
+        })
+        .populate({path:'replies',populate:{path:"admin"}}) 
+        .populate({path:'reposts',populate:[{path:"likes"},{path:
+            "comments" },{path:"admin"}]});
+            res.status(200).json({msg:"User details fetched!",user});
+    } catch(err){
+        res.status(400).json({msg:"error in user details",err:err.message});
+    }
+};
+
+ 

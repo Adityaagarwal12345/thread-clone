@@ -1,12 +1,10 @@
 const express=require('express');
-const {signin}=require("./controllers/user-controller")
+const {signin,login,userDetails}=require("./controllers/user-controller")
 const router=express.Router();
 
-router.get('/test', (req, res) => {
-  res.send('Route working fine 🚀');
-});
-
 router.post('/signin',signin);
+router.post("/login",signin);
 
+router.get('/user/:id',userDetails);
 
 module.exports=router;
