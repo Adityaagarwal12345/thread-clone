@@ -1,7 +1,8 @@
 const User=require('../models/user-model');
 const bcrypt = require("bcrypt");
+const formidable = require('formidable');
 const jwt=require("jsonwebtoken");
-
+const cloudinary =require("../config/cloudinary");
 exports.signin=async (req,res) => {
     try{
         const {userName,email,password}=req.body;
@@ -73,41 +74,52 @@ exports.signin=async (req,res) => {
 //user save tou ek toke  generate krrnege jsonweb token ki madad se isko hm 30 din ke liye store krdenge user ka 
 //ab maaanlo token generate hogya tou hm cookies mai save krdenge
 //agar hogya tou hm store krdenge 
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-exports.login=async(req,res)=>{
-    try{
-        const {email,password}=req.body;
-        if(!email||!password){
-            res.status(400).json({
-                msg:"Email and password are not valid"
-            });
-        }
-        const userExists=await User.findOne({email})
-        if(!userExists){
-            return res.status(400).json({msg:"please signup first!"});
-        }
-        const checkpassword=await bcrypt.compare(password,userExists.password);
-        if(!checkpassword){
-            return res.status(400).json({msg:"Incorrect credential!"})
-        }
-        const accessToken =jwt.sign({token:userExists._id},process.jwt.env.JWT_SECRET,{expiresIn:'30d'}
-
-        );
-        if(!accessToken){
-            return res.status(400).json({msg:"token not generated in login!"});
-        }
-        res.cookie('token',accessToken,{
-            maxAge:1000 * 60* 60 *24*30,
-            httpOnly:true,
-            secure:true,
-            sameSite:"none",
-        })
-        res.status(200).json({msg:"user logged in successfully!"});
-
-    }catch(err){
-        res.status(400).json({msg:"error in login!",err:err.message});
+    if (!email || !password) {
+      return res.status(400).json({ msg: "Email and password are required!" });
     }
+
+    const userExists = await User.findOne({ email });
+    if (!userExists) {
+      return res.status(400).json({ msg: "Please signup first!" });
+    }
+
+    const checkPassword = await bcrypt.compare(password, userExists.password);
+    if (!checkPassword) {
+      return res.status(400).json({ msg: "Incorrect credentials!" });
+    }
+
+    const accessToken = jwt.sign(
+      { token: userExists._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+
+    console.log("Generated Token:", accessToken);
+
+    res.cookie("token", accessToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    res.status(200).json({
+      msg: "User logged in successfully!",
+      token: accessToken,
+    });
+  } catch (err) {
+    res.status(400).json({
+      msg: "Error in login!",
+      err: err.message,
+    });
+  }
 };
+
+
 
 //ab banayenge userdetails the hai na tou ab hmko krna hoga
 
@@ -136,4 +148,134 @@ exports.userDetails = async(req,res)=>{
     }
 };
 
- 
+ //lets make a fucntion called follow user
+exports.followUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ msg: "Id is required!" });
+    }
+
+    const userExists = await User.findById(id);
+    if (!userExists) {
+      return res.status(400).json({ msg: "User doesn't exist!" });
+    }
+
+    // ab user ki saari details mil now to 
+    // follow the user we need to check if we already includes in its list or not 
+
+    // .user.id will check ki hamari khudki id uske mai ya nhi
+    // ensure req.user is present (from auth middleware)
+    const followerId = req.user && req.user._id ? req.user._id.toString() : null;
+    if (!followerId) {
+      return res.status(401).json({ msg: "Unauthorized: user id missing" });
+    }
+
+    // normalize followers to string ids for comparison
+    const followersAsStrings = (userExists.followers || []).map(String);
+
+    // If already following → unfollow
+    if (followersAsStrings.includes(followerId)) {
+      await User.findByIdAndUpdate(
+        userExists._id,
+        { $pull: { followers: followerId } },
+        { new: true }
+      );
+
+      return res.status(200).json({ msg: `Unfollowed ${userExists.userName}` });
+    }
+
+    // Else → follow
+    await User.findByIdAndUpdate(
+      userExists._id,
+      { $push: { followers: followerId } },
+      { new: true }
+    );
+
+    return res.status(200).json({ msg: `Followed ${userExists.userName}` });
+  } catch (err) {
+    res.status(400).json({ msg: "error in followUser!", err: err.message });
+  }
+};
+
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const userExists = await User.findById(req.user._id);
+    if (!userExists) {
+      return res.status(400).json({ msg: "No such user !" });
+    }
+    const form = formidable({});
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        return res.status(400).json({ msg: "Error in formidable !", err: err });
+      }
+      if (fields.text) {
+        await User.findByIdAndUpdate(
+          req.user._id,
+          { bio: fields.text },
+          { new: true }
+        );
+      }
+      if (files.media) {
+        if (userExists.public_id) {
+          await cloudinary.uploader.destroy(
+            userExists.public_id,
+            (error, result) => {
+              console.log({ error, result });
+            }
+          );
+        }
+        const uploadedImage = await cloudinary.uploader.upload(
+          files.media.filepath,
+          { folder: "Threads_clone_youtube/Profiles" }
+        );
+        if (!uploadedImage) {
+          return res.status(400).json({ msg: "Error while uploading pic !" });
+        }
+        await User.findByIdAndUpdate(
+          req.user._id,
+          {
+            profilePic: uploadedImage.secure_url,
+            public_id: uploadedImage.public_id,
+          },
+          { new: true }
+        );
+      }
+    });
+    res.status(201).json({ msg: "Profile updated successfully !" });
+  } catch (err) {
+    res.status(400).json({ msg: "Error in updateProfile !", err: err.message });
+  }
+};
+
+//regex query mtlb kya ye query se match krta hai
+//$ options we can tae for case insesitive
+exports.searchUser = async (req, res) => {
+  try {
+    const { query } = req.params;
+    const users = await User.find({
+      $or: [
+        { userName: { $regex: query, $options: "i" } },
+        { email: { $regex: query, $options: "i" } },
+      ],
+    });
+    res.status(200).json({ msg: "Searched !", users });
+  } catch (err) {
+    res.status(400).json({ msg: "Error in searchUser !", err: err.message });
+  }
+};
+
+exports.logout = async(req,res) =>{
+    try{
+        res.cookie('token',"",{
+            maxAge:Date.now(),
+            httpOnly:true,
+            sameSite:"none",
+            secure:true,
+        })
+        res.status(400).json({msg:"you logged out!"});
+    }catch(err){
+        res.status(400).json({msg:'error in logout !'})
+    }
+}

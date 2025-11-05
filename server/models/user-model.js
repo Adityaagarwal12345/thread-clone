@@ -26,7 +26,7 @@ const userSchema=new mongoose.Schema({
     public_id:{
         type:String
     },
-    followers:[{ type:mongoose.Schema.Types.ObjectId,ref:"user" }],
+    followers:[{ type:mongoose.Schema.Types.ObjectId,ref:"User" }],
     threads:[{type:mongoose.Schema.Types.ObjectId,ref:"post"}],
     replies:[{type:mongoose.Schema.Types.ObjectId,ref:"comment"}],
     reposts:[{type:mongoose.Schema.Types.ObjectId,ref:"post"}],
