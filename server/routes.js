@@ -16,6 +16,12 @@ const {
   likePost,
   repost,
   singlePost} = require("./controllers/post-controller");
+
+  const {
+  addComment,
+  deleteComment,
+} = require("./controllers/comment-controller");
+
 const auth=require("./middleware/auth");
 
 const router = express.Router();
@@ -36,6 +42,10 @@ router.delete("/post/:id",auth,deletePost);
 router.put("/post/like/:id",auth,likePost)
 router.put("/repost/:id",auth,repost);
 router.get("/post/:id",auth,singlePost);
+
+
+router.post("/comment/:id", auth, addComment);
+router.delete("/comment/:postId/:id", auth, deleteComment);
 
 //const protected = async(req,res)=>{
  //   res.status(200).json(req.user);
