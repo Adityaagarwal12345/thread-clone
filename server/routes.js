@@ -1,8 +1,18 @@
 const express=require('express');
-const {signin,login,userDetails,followUser, updateProfile,searchUser, logout}=require("./controllers/user-controller")
-const router=express.Router();
+const {
+  signin,
+  login,
+  userDetails,
+  followUser,
+  updateProfile,
+  searchUser,
+  logout,
+  myInfo,
+} = require("./controllers/user-controller");
+const {addPost} = require("./controllers/post-controller");
 const auth=require("./middleware/auth");
 
+const router = express.Router();
 router.post('/signin',signin);
 router.post("/login",login);
 
@@ -12,6 +22,9 @@ router.put("/update",auth,updateProfile);
 router.get("/users/search/:query", auth, searchUser);
 router.post("/logout",auth,logout);
 router.get("/me",auth,myInfo);
+
+
+router.post("/post", auth, addPost);
 //const protected = async(req,res)=>{
  //   res.status(200).json(req.user);
 //}
