@@ -4,11 +4,11 @@ const commentSchema = new mongoose.Schema(
   {
     admin: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // must match User model
+      ref: "User",
     },
     post: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Post", // must match Post model name exactly
+      ref: "Post",
     },
     text: {
       type: String,

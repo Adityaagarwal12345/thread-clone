@@ -5,7 +5,6 @@ const postSchema = new mongoose.Schema(
     admin: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     text: {
       type: String,
@@ -16,21 +15,10 @@ const postSchema = new mongoose.Schema(
     public_id: {
       type: String,
     },
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    comments: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment", // 🔥 connect to Comment model, not User
-      },
-    ],
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
   { timestamps: true }
 );
 
-const postModel = mongoose.model("Post", postSchema);
-module.exports = postModel;
+module.exports = mongoose.model("Post", postSchema);
