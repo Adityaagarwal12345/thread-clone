@@ -9,7 +9,7 @@ const {
   logout,
   myInfo,
 } = require("./controllers/user-controller");
-const {addPost} = require("./controllers/post-controller");
+const {addPost,allPost,deletePost} = require("./controllers/post-controller");
 const auth=require("./middleware/auth");
 
 const router = express.Router();
@@ -25,6 +25,8 @@ router.get("/me",auth,myInfo);
 
 
 router.post("/post", auth, addPost);
+router.get("/post",auth,allPost);
+router.delete("/post/:id",auth,deletePost);
 //const protected = async(req,res)=>{
  //   res.status(200).json(req.user);
 //}

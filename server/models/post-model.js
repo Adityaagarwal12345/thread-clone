@@ -1,24 +1,36 @@
 const mongoose = require("mongoose");
 
-const postSchema = new mongoose.Schema({
-    admin:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"user",
+const postSchema = new mongoose.Schema(
+  {
+    admin: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    text:{
-        type:String
+    text: {
+      type: String,
     },
-    media:{
-        type:String
+    media: {
+      type: String,
     },
-    public_id:{
-        type:String
+    public_id: {
+      type: String,
     },
-    likes:[{type:mongoose.Schema.Types.ObjectId,ref:"user"}],
-    comment:[{type:mongoose.Schema.Types.ObjectId,ref:"user"}]
-},
-    {timestamps:true}
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment", // 🔥 connect to Comment model, not User
+      },
+    ],
+  },
+  { timestamps: true }
 );
-const postModel=mongoose.model("post",postSchema);
-module.exports=postModel;
-//when we pass a single object that means only a single user will post
+
+const postModel = mongoose.model("Post", postSchema);
+module.exports = postModel;
