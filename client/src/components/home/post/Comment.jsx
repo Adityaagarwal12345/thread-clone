@@ -4,7 +4,8 @@ import { Stack } from "@mui/system";
 import { useMediaQuery } from "@mui/material";
 const Comments=()=>{
     const _700=useMediaQuery("(min-width:700px)");
-    return (<div>
+    const handleDeleteComment=()=>{}
+    return (<>
         <Stack flexDirection={"column"}
         gap={2}
         
@@ -38,7 +39,9 @@ const Comments=()=>{
         
 
         </Stack>
-        Comments
-        </div> );
+        
+        <MenuItem onClick={handleDeleteComment}>Delete</MenuItem>
+        </> 
+    );
 };
 export default Comments;

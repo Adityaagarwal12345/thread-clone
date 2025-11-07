@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Header from '../../components/comman/Header'
 import { Stack, useMediaQuery } from '@mui/material'
 import AddPost from '../../components/modals/AddPost'
+import EditProfile from '../../components/modals/EditProfile'
 const ProtectedLayout = () => {
 
   const _700 = useMediaQuery("(min-width:700px)");
@@ -16,6 +17,7 @@ const ProtectedLayout = () => {
     >
         <Header/>
         <AddPost/>
+        <EditProfile/>
         <Outlet/>
     </Stack>
   )
