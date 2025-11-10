@@ -1,23 +1,41 @@
-import { Menu } from '@mui/material'
+import React from 'react';
+import { Menu, MenuItem } from '@mui/material';
 import { Link } from 'react-router-dom';
-import React from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleMainMenu,toggleColorMode } from '../../redux/slice';
 
 const MainMenu = () => {
-    const handleClose= ()=>{};
-    const handleToggleTheme=()=>{};
-    const handleLogout=()=>{};
-  return (
-    <div>
-      <Menu anchorEl={''} open={true} onClose={handleClose} anchorOrigin={{vertical:'bottom',horizontal:'left'
-       
-      }} 
-       transformOrigin={{Vertical:'top',horizontal:"right"}}>
-        <MenuItem onClick={handleToggleTheme}>toggle theme</MenuItem>
-        <Link to ={'/profile/threads/2'}></Link>
-          <MenuItem >Logout</MenuItem>
-       </Menu>
-    </div>
-  )
-}
+  const { anchorEl } = useSelector((state) => state.service);
+  const dispatch = useDispatch();
 
-export default MainMenu
+  const handleClose = () => {
+    dispatch(toggleMainMenu(null));
+  };
+
+  const handleToggleTheme = () => {
+    handleClose();
+    dispatch(toggleColorMode());
+  };
+
+  const handleLogout = () => {
+    // logic for logout
+  };
+
+  return (
+    <Menu
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+    >
+      <MenuItem onClick={handleToggleTheme}>Toggle Theme</MenuItem>
+      <MenuItem component={Link} to="/profile/threads/2">
+        Profile
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+    </Menu>
+  );
+};
+
+export default MainMenu;

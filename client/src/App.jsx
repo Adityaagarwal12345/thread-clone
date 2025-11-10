@@ -11,16 +11,32 @@ import ProfileLayout from './pages/Protected/profile/ProfileLayout'
 import Replies from './pages/Protected/profile/Replies'
 import Repost from './pages/Protected/profile/Repost'
 import SinglePost from './pages/Protected/SinglePost'
+import Threads from './pages/Protected/profile/Threads'
+import { useSelector } from 'react-redux'
+import { Box } from '@mui/system'
+import { useMyInfoQuery } from './redux/service'
 const App = () => {
-  const data=true;//conditional rendering for loading component comes from redux
+  const {darkMode,myInfo} = useSelector(state=>state.service); 
+  const {data,isError}=useMyInfoQuery();//conditional rendering for loading component comes from redux
+
+  if(isError){
+    myInfo=null;
+  }
+
+  if(!data && !isError){
+    return (
+      <BrowserRouter>
+      <Route exact path='/' element={<Register/>}/>
+      </BrowserRouter>
+    )
+  }
   return (
    <>
     <Box minHeight={"100vh"}>
     <BrowserRouter>
       <Header/>
       <Routes>
-        {
-          data? <Route path='/' element={<ProtectedLayout/>}>
+        {? <Route path='/' element={<ProtectedLayout/>}>
         <Route exact path=""element={<Home/>}/>
         <Route exact path='post/:id' element={<SinglePost/>}/>
         <Route exact path='/search' element={<Search/>}/>
@@ -29,8 +45,8 @@ const App = () => {
             <Route exact path="replies/:id" element={<Replies/>}/>
              <Route exact path="reposts/:id" element={<Repost/>}/>
              </Route>
-             ):(
-             <Route path='/register' element={<Register/>}/>
+             :(
+        
         )}
         <Route path='*' element={<Error/>}>
         </Route>

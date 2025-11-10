@@ -1,15 +1,17 @@
 import { Typography } from '@mui/material';
 import { Stack,TextField,Button } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useState } from 'react'; 
+import { useEffect, useState } from 'react'; 
 import { useMediaQuery } from '@mui/material';
 import React from 'react'  
+import { useSgninMutation } from '../redux/service';
+//signinuser is a function and signinuserdata is the data returned from the function
 const Register = () => {
     const _700 = useMediaQuery("(min-width:300px)");//resposniveness manlo agar ui 700 px se kam hai tou kuch ni hoga
-
+    const [signinUser,signinUserData] = useSgninMutation();
 
     const [login,setLogin]=useState(false);
-    const [username,setUsername]=useState('');
+    const [userName,setUsername]=useState('');
     const [email,setEmail]=useState('');
     const [password,setPassword]=useState('');
 //implementing use state hook for toggle login and register form
@@ -25,14 +27,18 @@ const Register = () => {
     };
      const handleRegister=()=>{
          const data={
-            username,
+            userName,
             email,
             password
         };
-        console.log(data);
+        await signinUser(data);
     };
 
-
+    useEffect(()=>{
+        if(signinUserData.isSuccess){
+        console.log("user registered successfully");
+    }
+},[signinUserData.isSuccess]);//ye check krega ki signin data true hai tou ye log krega vrna kuch ni hoga or if its logs and its refresh the log will disappear
 
   return <>
   <Stack width={'100%'}
