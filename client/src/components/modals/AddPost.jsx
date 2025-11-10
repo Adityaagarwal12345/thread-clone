@@ -1,114 +1,184 @@
-import React from 'react'
-import { Dialog, Typography } from '@mui/material';
-import { useMediaQuery } from '@mui/material'
-import {  Box } from '@mui/system';
-import { RxCross2 } from 'react-icons/rx';
-import {FaImages} from "react-icons/fa";
-import { useState } from 'react';
-import { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {addPostModal} from "../../redux/slice"
+import {
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import { RxCross2 } from "react-icons/rx";
+import { FaImages } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addPostModal } from "../../redux/slice";
+import { useAddPostMutation } from "../../redux/service";
+import Loading from "../common/Loading";
+import { Bounce, toast } from "react-toastify";
+
 const AddPost = () => {
+  const { openAddPostModal, myInfo } = useSelector((state) => state.service);
 
+  const [addNewPost, addNewPostData] = useAddPostMutation();
 
-    const {openAddPostModal} = useSelector(state=>state.service);
-    const _700 = useMediaQuery("(min-width:700px)");
-    const _500 = useMediaQuery("(min-width:500px)");
-    const _300 = useMediaQuery("(min-width:300px)");
+  const _700 = useMediaQuery("(min-width:700px)");
+  const _500 = useMediaQuery("(min-width:500px)");
+  const _300 = useMediaQuery("(min-width:300px)");
 
-    const [text,setText]=useState();
-    const [media,setMedia]=useState();
-    const mediaRef=useRef();
-    
-    const handleClose = ()=>{
-        dispatchEvent(addPostModal(false));
+  const [text, setText] = useState();
+  const [media, setMedia] = useState();
+
+  const mediaRef = useRef();
+  const dispatch = useDispatch();
+
+  const handleClose = () => {
+    dispatch(addPostModal(false));
+  };
+
+  const handleMediaRef = () => {
+    mediaRef.current.click();
+  };
+
+  const handlePost = async () => {
+    const data = new FormData();
+    if (text) {
+      data.append("text", text);
     }
-    const handleMediaRef=()=>{
-        mediaRef.current.click();
+    if (media) {
+      data.append("media", media);
     }
-    //this function check when we click post the page will automatically post the data
-        const handlePost=()=>{}
+    await addNewPost(data);
+  };
+
+  useEffect(() => {
+    if (addNewPostData.isSuccess) {
+      setText();
+      setMedia();
+      dispatch(addPostModal(false));
+      toast.success(addNewPostData.data.msg, {
+        position: "top-center",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+        transition: Bounce,
+      });
+    }
+    if (addNewPostData.isError) {
+     toast.error(addNewPostData.error.data.msg, {
+       position: "top-center",
+       autoClose: 2500,
+       hideProgressBar: false,
+       closeOnClick: true,
+       pauseOnHover: true,
+       draggable: true,
+       theme: "colored",
+       transition: Bounce,
+     });
+    }
+  }, [addNewPostData.isSuccess, addNewPostData.isError]);
+
   return (
-    <div>
-      <Dialog open={true}
-       onClose={handleClose}
-        fullWidth fullScreen={_700 ? false:true}>
-         <Box position={'absolute'} 
-         top={20} 
-         right={20} 
-         onclick={handleClose}>
-            <RxCross2 size={_300 ?30:20} className="image-icon" />
-         </Box>
-         <DialogTitle textAlign={"center"} mb={5}>
-            New Thread 
-         </DialogTitle>
-         <DialogContent>
-           <Stack flexDirection={"row"} gap={2} mb={5}>
-            <Avatar src="" alt=""/>
-            <Stack>
-                <Typography
-                variant={_500 ? "h5":"h6"}
-                fontWeight={"bold"}
-                fontSize={_300 ? "1.2rem":"1rem"}>  
-                    aditya agd
-                </Typography>
-               <textarea  cols={_500 ? 40:25}
-                rows={2}
-                className="text1"
-                placeholder="Start a Thread..."
-                autoFocus 
-                onChange={(e)=> setText(e.target.value)}/>   
-                {
-                    media ? (    
-                <img src={ URL.createObjectURL(media)}
-                 alt=""
-                 if="url-img" 
-                 width={_500?300:_300?200:100}
-                 height={_500?300:_300?200:100}
-                />
-                    ):null
-                }
-                <FaImages 
-                 size={28}
-                 className="image-icon"
-                 onClick={handleMediaRef}
-                />
-                <input 
-                 type ="file" 
-                 accept="image/*" 
-                 className="file-input"
-                 ref={mediaRef}
-                 onChange={(e)=>setMedia(e.target.files[0])}
-                 />  
-
-            </Stack>
-           </Stack>
-           <Stack flexDirection={'row'}
-           justifyContent={'space-between'}
-           alignItems={"center"}>
-            <Typography variant="h6"
-            fontsize={"1rem"}
-            color={"gray"}>
-            </Typography>
-            <Button size="large"
-             sx={{bgcolor:"GrayText"
-            ,color:'white',
-             borderRadius:"10px",
-            ":hover":{bgcolor:'gray'
-            ,cursor:'pointer'}
-            }}
-            onClick={handlePost}
+    <>
+      <Dialog
+        open={openAddPostModal}
+        onClose={handleClose}
+        fullWidth
+        fullScreen={_700 ? false : true}
+      >
+        {addNewPostData?.isLoading ? (
+          <Stack height={"60vh"}>
+            <Loading />
+          </Stack>
+        ) : (
+          <>
+            <Box
+              position={"absolute"}
+              top={20}
+              right={20}
+              onClick={handleClose}
             >
-                POST
-            </Button>
-           </Stack>
-         </DialogContent>
-        </Dialog>
-    </div>
-  )
-}
+              <RxCross2 size={28} className="image-icon" />
+            </Box>
+            <DialogTitle textAlign={"center"} mb={5}>
+              New Thread...
+            </DialogTitle>
+            <DialogContent>
+              <Stack flexDirection={"row"} gap={2} mb={5}>
+                <Avatar
+                  src={myInfo ? myInfo.profilePic : ""}
+                  alt={myInfo ? myInfo.userName : ""}
+                />
+                <Stack>
+                  <Typography
+                    variant="h6"
+                    fontWeight={"bold"}
+                    fontSize={"1rem"}
+                  >
+                    {myInfo ? myInfo.userName : ""}
+                  </Typography>
+                  <textarea
+                    cols={_500 ? 40 : 25}
+                    rows={2}
+                    className="text1"
+                    placeholder="Start a Thread..."
+                    autoFocus
+                    onChange={(e) => setText(e.target.value)}
+                  />
+                  {media ? (
+                    <img
+                      src={URL.createObjectURL(media)}
+                      alt=""
+                      id="url-img"
+                      width={_500 ? 300 : _300 ? 200 : 100}
+                      height={_500 ? 300 : _300 ? 200 : 100}
+                    />
+                  ) : null}
+                  <FaImages
+                    size={28}
+                    className="image-icon"
+                    onClick={handleMediaRef}
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="file-input"
+                    ref={mediaRef}
+                    onChange={(e) => setMedia(e.target.files[0])}
+                  />
+                </Stack>
+              </Stack>
+              <Stack
+                flexDirection={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Typography variant="h6" fontSize={"1rem"} color={"gray"}>
+                  Anyone can reply
+                </Typography>
+                <Button
+                  size="large"
+                  sx={{
+                    bgcolor: "GrayText",
+                    color: "white",
+                    borderRadius: "10px",
+                    ":hover": { bgcolor: "gray", cursor: "pointer" },
+                  }}
+                  onClick={handlePost}
+                >
+                  Post
+                </Button>
+              </Stack>
+            </DialogContent>
+          </>
+        )}
+      </Dialog>
+    </>
+  );
+};
 
 export default AddPost;
-//using dialog from mui it helps to create modal
-//open is used to show dialogue
-//handle cross basically we used to close the window through cross symbol
