@@ -10,7 +10,7 @@ import {
 export const serviceApi = createApi({
   reducerPath: "serviceApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${SERVER_URL}/api/`,
+    baseUrl: `http://locakhost:7000/api/`,
     credentials: "include",
   }),
   keepUnusedDataFor: 60 * 60 * 24 * 7,
@@ -38,16 +38,17 @@ export const serviceApi = createApi({
         method: "GET",
       }),
       providesTags: ["Me"],
-      async onQueryStarted(params, { dispatch, queryFulfilled }) {
+      async onQueryStarted(params, { dispatch, queryFulfilled })//ye hmne isliye banaya hai kyu k jab bhi hm login krenge ya signup krenge tou hm chahte hai kyu k hmara data store mai chala jaye 
+      {
         try {
-          const { data } = await queryFulfilled;
-          dispatch(addMyInfo(data));
+          const { data } = await queryFulfilled;//ye hmara response hoga
+          dispatch(addMyInfo(data));//ye hmara action hai jisme hm data store mai bhej rhe hai
         } catch (err) {
           console.log(err);
         }
       },
     }),
-    logoutMe: builder.mutation({
+    logoutMe: builder.mutation({//logout krne k liye
       query: () => ({
         url: "logout",
         method: "POST",

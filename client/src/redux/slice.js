@@ -51,7 +51,7 @@ export const serviceSlice = createSlice({
       state.allPosts = [...uniquePosts];
     },
     addToAllPost: (state, action) => {
-      const newPostArr = [...action.payload.posts];
+      const newPostArr = [...action.payload.posts];//ye hmne action.payload se posts nikal ke newPostArr mai daal diye
       if (state.allPosts.length === 0) {
         state.allPosts = newPostArr;
         return;
@@ -59,7 +59,7 @@ export const serviceSlice = createSlice({
       const existingPosts = [...state.allPosts];
       newPostArr.forEach((e) => {
         const existingIndex = existingPosts.findIndex((i) => {
-          return i._id === e._id;
+          return i._id === e._id;//existing post id is equal to new post id
         });
         if (existingIndex !== -1) {
           existingPosts[existingIndex] = e;
