@@ -1,13 +1,22 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { Provider } from 'react-redux'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+import { Provider } from "react-redux";
 import store from "./redux/store.js";
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+import { HelmetProvider } from "react-helmet-async";
+
+const helmetContext = {};
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
     <Provider store={store}>
-       <App />
+      <HelmetProvider context={helmetContext} >
+        <App />
+      </HelmetProvider>
+      <ToastContainer />
     </Provider>
-  </StrictMode>,
-)
+  </React.StrictMode>
+);

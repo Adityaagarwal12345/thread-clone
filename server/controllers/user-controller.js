@@ -53,6 +53,7 @@ exports.signin=async (req,res) => {
                 httpOnly:true,
                 sameSite:"none",
                 secure:true,
+                signin:true,
             });
             
         res.status(201).json({msg:`user signed in sucessfully!hello ${result?.userName}`});
@@ -105,6 +106,7 @@ exports.login = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      partitioned: true,
     });
 
     res.status(200).json({

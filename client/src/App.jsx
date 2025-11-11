@@ -1,60 +1,53 @@
-import React from 'react'
-import Loading from './components/comman/Loading'
-import { BrowserRouter,Routes,Route } from 'react-router-dom'
-import Header from './components/comman/Header'
-import Search from './pages/Protected/Search'
-import Home from './pages/Protected/Home'
-import Error from './pages/Error/Error'
-import Register from './pages/Register'
-import ProtectedLayout from './pages/Protected/ProtectedLayout'
-import ProfileLayout from './pages/Protected/profile/ProfileLayout'
-import Replies from './pages/Protected/profile/Replies'
-import Repost from './pages/Protected/profile/Repost'
-import SinglePost from './pages/Protected/SinglePost'
-import Threads from './pages/Protected/profile/Threads'
-import { useSelector } from 'react-redux'
-import { Box } from '@mui/system'
-import { useMyInfoQuery } from './redux/service'
+import { Box } from "@mui/material";
+import { useSelector } from "react-redux";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Error from "./pages/Error";
+import Home from "./pages/Protected/Home";
+import ProfileLayout from "./pages/Protected/profile/ProfileLayout";
+import Replies from "./pages/Protected/profile/Replies";
+import Repost from "./pages/Protected/profile/Repost";
+import Threads from "./pages/Protected/profile/Threads";
+import ProtectedLayout from "./pages/Protected/ProtectedLayout";
+import Search from "./pages/Protected/Search";
+import Register from "./pages/Register";
+import SinglePost from "./pages/Protected/SinglePost";
+import { useMyInfoQuery } from "./redux/service";
+
 const App = () => {
-  const {darkMode,myInfo} = useSelector(state=>state.service); 
-  const {data,isError}=useMyInfoQuery();//conditional rendering for loading component comes from redux
+  const { darkMode } = useSelector((state) => state.service);
+  const { data, isError } = useMyInfoQuery();
 
-  if(isError){
-    myInfo=null;
-  }
-
-  if(!data && !isError){
+  if (isError || !data) {
     return (
       <BrowserRouter>
-      <Route exact path='/' element={<Register/>}/>
+        <Routes>
+          <Route exact path="/*" element={<Register />} />
+        </Routes>
       </BrowserRouter>
-    )
+    );
   }
-  return (
-   <>
-    <Box minHeight={"100vh"}>
-    <BrowserRouter>
-      <Header/>
-      <Routes>
-        {? <Route path='/' element={<ProtectedLayout/>}>
-        <Route exact path=""element={<Home/>}/>
-        <Route exact path='post/:id' element={<SinglePost/>}/>
-        <Route exact path='/search' element={<Search/>}/>
-        <Route exact path ="profile" element={<ProfileLayout/>}>
-           <Route exact path="threads/:id" element={<Threads/>}/>
-            <Route exact path="replies/:id" element={<Replies/>}/>
-             <Route exact path="reposts/:id" element={<Repost/>}/>
-             </Route>
-             :(
-        
-        )}
-        <Route path='*' element={<Error/>}>
-        </Route>
-      </Routes>
-    </BrowserRouter>
-    </Box>
-   </>
-  )
-}
 
-export default App
+  return (
+    <>
+      <Box minHeight={"100vh"} className={darkMode ? "mode" : ""}>
+        <BrowserRouter>
+          <Routes>
+            <Route exact path="/" element={<ProtectedLayout />}>
+              <Route exact path="" element={<Home />} />
+              <Route exact path="post/:id" element={<SinglePost />} />
+              <Route exact path="search" element={<Search />} />
+              <Route exact path="profile" element={<ProfileLayout />}>
+                <Route exact path="threads/:id" element={<Threads />} />
+                <Route exact path="replies/:id" element={<Replies />} />
+                <Route exact path="reposts/:id" element={<Repost />} />
+              </Route>
+            </Route>
+            <Route exact path="*" element={<Error />} />
+          </Routes>
+        </BrowserRouter>
+      </Box>
+    </>
+  );
+};
+
+export default App;

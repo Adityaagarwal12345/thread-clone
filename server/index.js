@@ -5,6 +5,13 @@ const connectDb = require("./config/db");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const router = require("./routes");
+const cors = require("cors");
+
+
+app.use(cors({
+  origin: "http://localhost:5173", // frontend URL
+  credentials: true, // to accept cookies from frontend
+}));
 mongoose.connection.once('open', () => {
   console.log("✅ Connected to DB:", mongoose.connection.name);
 });
